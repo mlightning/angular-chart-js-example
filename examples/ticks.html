@@ -8,13 +8,32 @@
 </head>
 <body ng-app="examples">
 <div class="container"></div>
-<div id="container" class="container">
+<div id="container" class="container"  ng-controller="TicksCtrl">
   <div class="row">
-    <div class="col-lg-8 col-sm-12" ng-controller="TicksCtrl">
+    <div class="col-lg-8 col-sm-12" >
       <div class="panel panel-default">
         <div class="panel-heading">Ticks Chart</div>
         <div class="panel-body">
           <canvas id="ticks" class="chart chart-line chart-xl" data="data" options="options" labels="labels"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-sm-12" >
+      <div class="panel panel-default">
+        <div class="panel-heading">Tick Details</div>
+        <div class="panel-body">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for..." ng-model="tick">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" data-ng-click="loadQuote()">Check !</button>
+            </span>
+          </div><!-- /input-group -->
+          <br>
+          <div class="input-group">
+            <textarea class="form-control" rows="20" cols="30" readonly="" style="width: 100%">
+              {{ quote }}
+            </textarea>
+          </div>
         </div>
       </div>
     </div>

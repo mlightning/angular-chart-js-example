@@ -156,22 +156,30 @@
     };
   });
 
-  app.controller('TicksCtrl', ['$scope', '$interval', function ($scope, $interval) {
+  app.controller('TicksCtrl', ['$scope', '$interval', '$http', '$q', function ($scope, $interval, $http, $q) {
     var maximum = document.getElementById('container').clientWidth / 2 || 300;
+    var canceler = $q.defer();
+    var ind = 0;
+    $scope.tick = "GOOG";
     $scope.data = [[]];
     $scope.labels = [];
     $scope.options = {
       animation: false,
-      showScale: false,
+      showScale: true,
       showTooltips: false,
-      pointDot: false,
-      datasetStrokeWidth: 0.5
+      pointDot: true,
+      datasetStrokeWidth: 1
     };
 
     // Update the dataset at 25FPS for a smoothly-animating chart
     $interval(function () {
       getLiveChartData();
-    }, 40);
+    }, 1000);
+
+    $scope.loadQuote = function () {
+      // console.log('wefwe');
+
+    }
 
     function getLiveChartData () {
       if ($scope.data[0].length) {
@@ -179,10 +187,27 @@
         $scope.data[0] = $scope.data[0].slice(1);
       }
 
-      while ($scope.data[0].length < maximum) {
-        $scope.labels.push('');
-        $scope.data[0].push(getRandomValue($scope.data[0]));
-      }
+      $http({
+        method: 'GET',
+        url: 'http://finance.google.com/finance/info?client=ig&q=' + $scope.tick,
+        // timeout: canceler.promise
+      }).then(function successCallback(response) {
+          // this callback will be called asynchronously
+          // when the response is available
+          var jsonData = response.data.replace("// ", "").trim();
+          jsonData = angular.fromJson(jsonData);
+          $scope.quote = jsonData;
+          while ($scope.data[0].length < maximum) {
+            ind++;
+            $scope.labels.push(ind);
+            $scope.data[0].push(parseFloat(jsonData[0].l) + Math.random() * 5 - 2.5);
+          }
+        }, function errorCallback(response) {
+          // called asynchronously if an error occurs
+          // or server returns response with an error status.
+          console.log(response);
+        });
+
     }
   }]);
 
